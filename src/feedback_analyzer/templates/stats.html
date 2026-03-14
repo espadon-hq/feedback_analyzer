@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Статистика{% endblock %}
+
+{% block content %}
+<h1>Статистика тональності</h1>
+
+{% if stats.total == 0 %}
+<p style="color:#999;">Відгуків ще немає. <a href="/">Додайте перший!</a></p>
+
+{% else %}
+
+<!-- Загальна кількість -->
+<p>Всього відгуків: <strong>{{ stats.total }}</strong></p>
+
+<!-- Таблиця статистики -->
+<table>
+    <thead>
+        <tr>
+            <th>Тональність</th>
+            <th>Кількість</th>
+            <th>Відсоток</th>
+            <th>Графік</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><span class="badge badge-positive">позитивні</span></td>
+            <td>{{ stats.positive }}</td>
+            <td>{{ stats.positive_pct }}%</td>
+            <td>
+                <!-- Простий прогрес-бар через HTML -->
+                <div style="background:#eee; border-radius:4px; height:16px; width:200px;">
+                    <div style="
+                        background:#28a745;
+                        width:{{ stats.positive_pct }}%;
+                        height:16px;
+                        border-radius:4px;
+                    "></div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td><span class="badge badge-negative">негативні</span></td>
+            <td>{{ stats.negative }}</td>
+            <td>{{ stats.negative_pct }}%</td>
+            <td>
+                <div style="background:#eee; border-radius:4px; height:16px; width:200px;">
+                    <div style="
+                        background:#dc3545;
+                        width:{{ stats.negative_pct }}%;
+                        height:16px;
+                        border-radius:4px;
+                    "></div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td><span class="badge badge-neutral">нейтральні</span></td>
+            <td>{{ stats.neutral }}</td>
+            <td>{{ stats.neutral_pct }}%</td>
+            <td>
+                <div style="background:#eee; border-radius:4px; height:16px; width:200px;">
+                    <div style="
+                        background:#6c757d;
+                        width:{{ stats.neutral_pct }}%;
+                        height:16px;
+                        border-radius:4px;
+                    "></div>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+{% endif %}
+{% endblock %}

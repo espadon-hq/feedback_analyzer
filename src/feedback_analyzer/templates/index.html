@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Відгуки{% endblock %}
+
+{% block content %}
+<h1>Відгуки користувачів</h1>
+
+<!-- Форма додавання нового відгуку -->
+<h2>Додати відгук</h2>
+<form action="/feedbacks/form" method="post">
+    <label for="text">Текст відгуку (англійська):</label>
+    <textarea
+        id="text"
+        name="text"
+        placeholder="Enter your feedback in English..."
+        required
+        minlength="3"
+    ></textarea>
+    <input type="submit" value="Додати та аналізувати">
+</form>
+
+<hr>
+
+<!-- Фільтрація за тональністю -->
+<h2>Список відгуків</h2>
+<form action="/" method="get" style="display:flex; gap:10px; align-items:flex-end;">
+    <div>
+        <label for="sentiment">Фільтр за тональністю:</label>
+        <select id="sentiment" name="sentiment">
+            <option value="">Всі</option>
+            <option value="positive" {% if sentiment == "positive" %}selected{% endif %}>Позитивні</option>
+            <option value="negative" {% if sentiment == "negative" %}selected{% endif %}>Негативні</option>
+            <option value="neutral"  {% if sentiment == "neutral"  %}selected{% endif %}>Нейтральні</option>
+        </select>
+    </div>
+    <div>
+        <button type="submit">Фільтрувати</button>
+    </div>
+</form>
+
+<br>
+
+<!-- Таблиця відгуків -->
+{% if feedbacks %}
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Текст відгуку</th>
+            <th>Тональність</th>
+            <th>Score</th>
+            <th>Джерело</th>
+            <th>Дата</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for fb in feedbacks %}
+        <tr>
+            <td>{{ fb.id }}</td>
+
+            <!-- Обрізаємо довгий текст до 80 символів -->
+            <td title="{{ fb.text }}">
+                {{ fb.text[:80] }}{% if fb.text|length > 80 %}...{% endif %}
+            </td>
+
+            <!-- Кольорова мітка тональності -->
+            <td>
+                <span class="badge badge-{{ fb.sentiment }}">
+                    {% if fb.sentiment == "positive" %}позитивний
+                    {% elif fb.sentiment == "negative" %}негативний
+                    {% else %}нейтральний
+                    {% endif %}
+                </span>
+            </td>
+
+            <td>{{ "%+.4f"|format(fb.score) }}</td>
+            <td>{{ fb.source }}</td>
+
+            <!-- Форматуємо дату -->
+            <td>{{ fb.created_at.strftime("%d.%m.%Y %H:%M") }}</td>
+
+            <!-- Кнопка видалення через POST (HTML не підтримує DELETE) -->
+            <td>
+                <form action="/feedbacks/{{ fb.id }}/delete" method="post">
+                    <button class="btn-delete" type="submit"
+                        onclick="return confirm('Видалити цей відгук?')">
+                        Видалити
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p style="color:#666; font-size:13px; margin-top:8px;">
+    Показано {{ feedbacks|length }} відгуків
+</p>
+
+{% else %}
+<p style="color:#999;">Відгуків ще немає. Додайте перший!</p>
+{% endif %}
+
+{% endblock %}
