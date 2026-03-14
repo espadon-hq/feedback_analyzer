@@ -1,0 +1,13 @@
+flake8==7.1.1
+pytest==8.3.4
+setuptools==58.0.4
+tox==4.24.1
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+jinja2
+python-multipart
+pandas
+vaderSentiment
+httpx
