@@ -3,58 +3,113 @@
 {% block title %}Імпорт CSV{% endblock %}
 
 {% block content %}
-<h1>Імпорт відгуків з CSV файлу</h1>
 
-<p style="color:#666; font-size:14px;">
+<h1 class="text-2xl font-bold mb-2 text-emerald-900">Імпорт відгуків з CSV</h1>
+<p class="text-sm text-gray-400 mb-6">
     Завантажте CSV файл та оберіть колонку яка містить текст відгуку.
     Підтримуються формати: власний, Amazon, Trustpilot та інші.
 </p>
 
-<!-- Крок 1: завантаження файлу -->
-<h2>Крок 1 — Оберіть файл</h2>
-<form action="/import" method="post" enctype="multipart/form-data" id="upload-form">
-    <label for="file">CSV файл (максимум 5 MB):</label>
-    <input type="file" id="file" name="file" accept=".csv" required>
-    <button type="submit">Завантажити та отримати колонки</button>
-</form>
-
-<!-- Крок 2: вибір колонки (з'являється після завантаження) -->
-{% if columns %}
-<hr>
-<h2>Крок 2 — Оберіть колонку з текстом</h2>
-
-<p style="color:#666; font-size:14px;">
-    Знайдено колонки: <strong>{{ columns|join(", ") }}</strong>.
-    Оберіть яка з них містить текст відгуку.
-</p>
-
-<form action="/import/confirm" method="post" enctype="multipart/form-data">
-    <!-- Передаємо файл повторно для підтвердження імпорту -->
-    <label for="file2">CSV файл (той самий):</label>
-    <input type="file" id="file2" name="file" accept=".csv" required>
-
-    <label for="column">Колонка з текстом відгуку:</label>
-    <select id="column" name="column" required>
-        {% for col in columns %}
-        <option value="{{ col }}">{{ col }}</option>
-        {% endfor %}
-    </select>
-
-    <button type="submit">Імпортувати відгуки</button>
-</form>
-{% endif %}
-
-<!-- Результат імпорту -->
+<!-- Успіх -->
 {% if imported_count is defined %}
-<hr>
-<div class="message-success">
-    Успішно імпортовано {{ imported_count }} відгуків!
-    <a href="/">Переглянути відгуки</a>
+<div class="bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm
+            rounded-xl px-4 py-3 mb-6 flex items-center gap-2">
+    <span class="text-lg">✅</span>
+    Успішно імпортовано <strong>{{ imported_count }}</strong> відгуків!
+    <a href="/" class="underline hover:text-emerald-900 ml-1 font-medium">
+        Переглянути →
+    </a>
 </div>
 {% endif %}
 
+<!-- Помилка -->
 {% if error %}
-<div class="message-error">{{ error }}</div>
+<div class="bg-red-50 border border-red-200 text-red-700 text-sm
+            rounded-xl px-4 py-3 mb-6 flex items-center gap-2">
+    <span class="text-lg">⚠️</span>
+    {{ error }}
+</div>
+{% endif %}
+
+<!-- Крок 1 -->
+<div class="bg-white rounded-xl border border-emerald-100 p-6 mb-6 shadow-sm">
+    <div class="flex items-center gap-3 mb-4">
+        <span class="w-7 h-7 bg-emerald-700 text-white rounded-full
+                     flex items-center justify-center text-sm font-bold">1</span>
+        <h2 class="text-base font-semibold text-emerald-800">
+            Завантажте файл
+        </h2>
+    </div>
+    <p class="text-xs text-gray-400 mb-4">Максимальний розмір: 5 MB</p>
+
+    <form action="/import" method="post" enctype="multipart/form-data">
+        <label class="block text-sm font-medium text-gray-600 mb-1">
+            CSV файл
+        </label>
+        <input type="file" name="file" accept=".csv" required
+               class="block w-full text-sm text-gray-500 mb-4
+                      file:mr-4 file:py-2 file:px-4 file:rounded-lg
+                      file:border-0 file:text-sm file:font-medium
+                      file:bg-emerald-700 file:text-white
+                      hover:file:bg-emerald-600 file:cursor-pointer
+                      file:transition">
+        <button type="submit"
+                class="bg-emerald-700 text-white text-sm px-5 py-2
+                       rounded-lg hover:bg-emerald-600 transition font-medium shadow-sm">
+            Завантажити та отримати колонки
+        </button>
+    </form>
+</div>
+
+<!-- Крок 2 -->
+{% if columns %}
+<div class="bg-white rounded-xl border border-emerald-300 p-6 shadow-sm">
+    <div class="flex items-center gap-3 mb-4">
+        <span class="w-7 h-7 bg-emerald-700 text-white rounded-full
+                     flex items-center justify-center text-sm font-bold">2</span>
+        <h2 class="text-base font-semibold text-emerald-800">
+            Оберіть колонку з текстом
+        </h2>
+    </div>
+    <p class="text-xs text-gray-400 mb-4">
+        Знайдені колонки:
+        <span class="font-medium text-emerald-700">
+            {{ columns|join(", ") }}
+        </span>
+    </p>
+
+    <form action="/import/confirm" method="post" enctype="multipart/form-data">
+        <label class="block text-sm font-medium text-gray-600 mb-1">
+            CSV файл (той самий)
+        </label>
+        <input type="file" name="file" accept=".csv" required
+               class="block w-full text-sm text-gray-500 mb-4
+                      file:mr-4 file:py-2 file:px-4 file:rounded-lg
+                      file:border-0 file:text-sm file:font-medium
+                      file:bg-emerald-700 file:text-white
+                      hover:file:bg-emerald-600 file:cursor-pointer
+                      file:transition">
+
+        <label class="block text-sm font-medium text-gray-600 mb-1">
+            Колонка з текстом відгуку
+        </label>
+        <select name="column" required
+                class="w-full border border-gray-200 rounded-lg px-3 py-2
+                       text-sm focus:outline-none focus:ring-2
+                       focus:ring-emerald-400 mb-4 bg-gray-50">
+            {% for col in columns %}
+            <option value="{{ col }}">{{ col }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit"
+                class="bg-emerald-700 text-white text-sm px-5 py-2
+                       rounded-lg hover:bg-emerald-600 transition
+                       font-medium shadow-sm">
+            ✓ Імпортувати відгуки
+        </button>
+    </form>
+</div>
 {% endif %}
 
 {% endblock %}

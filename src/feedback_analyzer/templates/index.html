@@ -3,103 +3,171 @@
 {% block title %}Відгуки{% endblock %}
 
 {% block content %}
-<h1>Відгуки користувачів</h1>
 
-<!-- Форма додавання нового відгуку -->
-<h2>Додати відгук</h2>
-<form action="/feedbacks/form" method="post">
-    <label for="text">Текст відгуку (англійська):</label>
-    <textarea
-        id="text"
-        name="text"
-        placeholder="Enter your feedback in English..."
-        required
-        minlength="3"
-    ></textarea>
-    <input type="submit" value="Додати та аналізувати">
-</form>
+<h1 class="text-2xl font-bold mb-6 text-emerald-900">Відгуки користувачів</h1>
 
-<hr>
+<!-- Форма додавання відгуку -->
+<div class="bg-white rounded-xl border border-emerald-100 p-6 mb-6 shadow-sm">
+    <h2 class="text-base font-semibold mb-4 text-emerald-800 flex items-center gap-2">
+        <span class="w-6 h-6 bg-emerald-100 text-emerald-700 rounded-full
+                     flex items-center justify-center text-xs font-bold">+</span>
+        Додати відгук
+    </h2>
+    <form action="/feedbacks/form" method="post">
+        <label class="block text-sm font-medium text-gray-600 mb-1">
+            Текст відгуку (англійська)
+        </label>
+        <textarea
+            name="text"
+            rows="3"
+            required
+            minlength="3"
+            placeholder="Enter your feedback in English..."
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm
+                   focus:outline-none focus:ring-2 focus:ring-emerald-400
+                   focus:border-emerald-400 resize-none mb-3 bg-gray-50"
+        ></textarea>
+        <button type="submit"
+                class="bg-emerald-700 text-white text-sm px-5 py-2 rounded-lg
+                       hover:bg-emerald-600 transition font-medium shadow-sm">
+            Аналізувати та зберегти
+        </button>
+    </form>
+</div>
 
-<!-- Фільтрація за тональністю -->
-<h2>Список відгуків</h2>
-<form action="/" method="get" style="display:flex; gap:10px; align-items:flex-end;">
-    <div>
-        <label for="sentiment">Фільтр за тональністю:</label>
-        <select id="sentiment" name="sentiment">
-            <option value="">Всі</option>
-            <option value="positive" {% if sentiment == "positive" %}selected{% endif %}>Позитивні</option>
-            <option value="negative" {% if sentiment == "negative" %}selected{% endif %}>Негативні</option>
-            <option value="neutral"  {% if sentiment == "neutral"  %}selected{% endif %}>Нейтральні</option>
-        </select>
-    </div>
-    <div>
-        <button type="submit">Фільтрувати</button>
-    </div>
-</form>
-
-<br>
+<!-- Фільтрація -->
+<div class="bg-white rounded-xl border border-gray-100 p-4 mb-4 shadow-sm">
+    <form action="/" method="get" class="flex items-end gap-4 flex-wrap">
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">
+                Фільтр за тональністю
+            </label>
+            <select name="sentiment"
+                    class="border border-gray-200 rounded-lg px-3 py-2 text-sm
+                           focus:outline-none focus:ring-2 focus:ring-emerald-400
+                           bg-gray-50">
+                <option value="">Всі</option>
+                <option value="positive"
+                    {% if sentiment == "positive" %}selected{% endif %}>
+                    😊 Позитивні
+                </option>
+                <option value="negative"
+                    {% if sentiment == "negative" %}selected{% endif %}>
+                    😞 Негативні
+                </option>
+                <option value="neutral"
+                    {% if sentiment == "neutral" %}selected{% endif %}>
+                    😐 Нейтральні
+                </option>
+            </select>
+        </div>
+        <button type="submit"
+                class="bg-emerald-700 text-white text-sm px-4 py-2
+                       rounded-lg hover:bg-emerald-600 transition font-medium">
+            Фільтрувати
+        </button>
+        {% if sentiment %}
+        <a href="/"
+           class="text-sm text-gray-400 hover:text-emerald-700 transition">
+            ✕ Скинути
+        </a>
+        {% endif %}
+    </form>
+</div>
 
 <!-- Таблиця відгуків -->
 {% if feedbacks %}
-<table>
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Текст відгуку</th>
-            <th>Тональність</th>
-            <th>Score</th>
-            <th>Джерело</th>
-            <th>Дата</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for fb in feedbacks %}
-        <tr>
-            <td>{{ fb.id }}</td>
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+    <table class="w-full text-sm">
+        <thead class="bg-emerald-800 text-white">
+            <tr>
+                <th class="px-4 py-3 text-left font-medium w-10">#</th>
+                <th class="px-4 py-3 text-left font-medium">Текст відгуку</th>
+                <th class="px-4 py-3 text-left font-medium w-32">Тональність</th>
+                <th class="px-4 py-3 text-left font-medium w-24">Score</th>
+                <th class="px-4 py-3 text-left font-medium w-24">Джерело</th>
+                <th class="px-4 py-3 text-left font-medium w-36">Дата</th>
+                <th class="px-4 py-3 w-20"></th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+            {% for fb in feedbacks %}
+            <tr class="hover:bg-emerald-50 transition">
 
-            <!-- Обрізаємо довгий текст до 80 символів -->
-            <td title="{{ fb.text }}">
-                {{ fb.text[:80] }}{% if fb.text|length > 80 %}...{% endif %}
-            </td>
+                <td class="px-4 py-3 text-gray-300 font-mono text-xs">
+                    {{ fb.id }}
+                </td>
 
-            <!-- Кольорова мітка тональності -->
-            <td>
-                <span class="badge badge-{{ fb.sentiment }}">
-                    {% if fb.sentiment == "positive" %}позитивний
-                    {% elif fb.sentiment == "negative" %}негативний
-                    {% else %}нейтральний
+                <td class="px-4 py-3 text-gray-700" title="{{ fb.text }}">
+                    {{ fb.text[:80] }}{% if fb.text|length > 80 %}...{% endif %}
+                </td>
+
+                <td class="px-4 py-3">
+                    {% if fb.sentiment == "positive" %}
+                    <span class="inline-flex items-center gap-1 bg-emerald-100
+                                 text-emerald-800 text-xs font-semibold
+                                 px-2 py-1 rounded-full">
+                        😊 позитивний
+                    </span>
+                    {% elif fb.sentiment == "negative" %}
+                    <span class="inline-flex items-center gap-1 bg-red-100
+                                 text-red-700 text-xs font-semibold
+                                 px-2 py-1 rounded-full">
+                        😞 негативний
+                    </span>
+                    {% else %}
+                    <span class="inline-flex items-center gap-1 bg-gray-100
+                                 text-gray-600 text-xs font-semibold
+                                 px-2 py-1 rounded-full">
+                        😐 нейтральний
+                    </span>
                     {% endif %}
-                </span>
-            </td>
+                </td>
 
-            <td>{{ "%+.4f"|format(fb.score) }}</td>
-            <td>{{ fb.source }}</td>
+                <td class="px-4 py-3 font-mono text-xs
+                    {% if fb.score >= 0.05 %}text-emerald-600
+                    {% elif fb.score <= -0.05 %}text-red-500
+                    {% else %}text-gray-400{% endif %}">
+                    {{ "%+.4f"|format(fb.score) }}
+                </td>
 
-            <!-- Форматуємо дату -->
-            <td>{{ fb.created_at.strftime("%d.%m.%Y %H:%M") }}</td>
+                <td class="px-4 py-3">
+                    <span class="bg-gray-100 text-gray-500 text-xs
+                                 px-2 py-1 rounded-md">
+                        {{ fb.source }}
+                    </span>
+                </td>
 
-            <!-- Кнопка видалення через POST (HTML не підтримує DELETE) -->
-            <td>
-                <form action="/feedbacks/{{ fb.id }}/delete" method="post">
-                    <button class="btn-delete" type="submit"
-                        onclick="return confirm('Видалити цей відгук?')">
-                        Видалити
-                    </button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+                <td class="px-4 py-3 text-gray-400 text-xs">
+                    {{ fb.created_at.strftime("%d.%m.%Y %H:%M") }}
+                </td>
 
-<p style="color:#666; font-size:13px; margin-top:8px;">
+                <td class="px-4 py-3">
+                    <form action="/feedbacks/{{ fb.id }}/delete" method="post">
+                        <button type="submit"
+                                onclick="return confirm('Видалити цей відгук?')"
+                                class="text-xs text-red-400 hover:text-red-600
+                                       transition font-medium">
+                            Видалити
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<p class="text-xs text-gray-400 mt-2 text-right">
     Показано {{ feedbacks|length }} відгуків
 </p>
 
 {% else %}
-<p style="color:#999;">Відгуків ще немає. Додайте перший!</p>
+<div class="bg-white rounded-xl border border-dashed border-emerald-200
+            p-12 text-center shadow-sm">
+    <p class="text-4xl mb-3">📭</p>
+    <p class="text-gray-400 text-sm">Відгуків ще немає. Додайте перший!</p>
+</div>
 {% endif %}
 
 {% endblock %}
